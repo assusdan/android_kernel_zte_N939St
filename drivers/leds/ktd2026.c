@@ -153,8 +153,8 @@ static ssize_t Breathled_switch_store ( struct device *dev,
 	
 	if( value )
 	{
-		mode = (value>>8)&0xff;
-		brightness = value & 0xff;
+		mode = value;
+		brightness = 235;
 	}
 	else
 	{
@@ -165,19 +165,19 @@ static ssize_t Breathled_switch_store ( struct device *dev,
 	//printk(KERN_ERR" michael_Leepp =================Breathled_switch_store mode2 %d %d!\n", mode, brightness);
 
 	if( mode == 0x1){
-	   breath_leds = 1;
-	   led_on_off = 1;
-	   ktd2xx_led_on_red(brightness);
-	}
-	else if( mode == 0x2){
 	   breath_leds = 2;
 	   led_on_off = 2;
 	   ktd2xx_led_on_green(brightness);
 	}
+	else if( mode == 0x2){
+	   //breath_leds = 2;
+	   //led_on_off = 2;
+	   //ktd2xx_led_on_green(brightness);
+	}
 	else if( mode == 0x3){
-	   breath_leds = 3;
-	   led_on_off = 3;
-	   ktd2xx_led_on_blue(brightness);
+	    breath_leds = 5;
+	   led_on_off = 5;
+	   ktd22xx_lowbattery_breath_leds_green(brightness);
 	}
 	else if( mode == 0x4){
 	   breath_leds = 4;
@@ -190,9 +190,9 @@ static ssize_t Breathled_switch_store ( struct device *dev,
 	   ktd22xx_lowbattery_breath_leds_green(brightness);
 	}
 	else if( mode == 0x6){
-	   breath_leds = 6;
-	   led_on_off = 6;
-	   ktd22xx_lowbattery_breath_leds_blue(brightness);
+	   breath_leds = 5;
+	   led_on_off = 5;
+	   ktd22xx_lowbattery_breath_leds_green(brightness);
 	}
 	else{
 	   breath_leds = 255;
@@ -267,7 +267,7 @@ static ssize_t ktd20xx_write(struct file *file, const char __user *buf, size_t s
 	unsigned char mode;
 	unsigned char brightness;
 	
-	memset(rec_data, 0, 2);  //«Â¡„
+	memset(rec_data, 0, 2);  //Ê∏ÖÈõ∂
 	
 	
 	//printk(" michael_Leepp =================ktd20xx_write!\n");
@@ -488,8 +488,8 @@ static struct of_device_id ktd20xx_match_table[] = {
         { },
 };
 
-/* 1. ∑÷≈‰“ª∏ˆi2c_driverΩ·ππÃÂ */
-/* 2. …Ë÷√i2c_driverΩ·ππÃÂ */
+/* 1. ÂàÜÈÖç‰∏Ä‰∏™i2c_driverÁªìÊûÑ‰Ωì */
+/* 2. ËÆæÁΩÆi2c_driverÁªìÊûÑ‰Ωì */
 static struct i2c_driver ktd20xx_driver = {
 	.driver = {
 		.name	= KTD_I2C_NAME,
