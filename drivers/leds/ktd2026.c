@@ -103,22 +103,17 @@ void ktd2xx_led_on_blue(unsigned char brightness){
         i2c_smbus_write_byte_data(ktd20xx_client, 0x00, 0x08);//Device OFF-Either SCL goes low or SDA stops toggling
 }
 
-void ktd22xx_breath_leds_time(int blink){
+void ktd22xx_breath_leds_time(void){
 	//set breath led flash time from blink
-	int period, flashtime;
-	period = (blink >> 8) & 0xff;
-	flashtime = blink & 0xff;
-	printk("ktd20xx led write blink = %x, period = %x, flashtime = %x\n", blink, period, flashtime);
 
+	i2c_smbus_write_byte_data(ktd20xx_client, 0x00, 0x20);// initialization LED off
 	i2c_smbus_write_byte_data(ktd20xx_client, 0x04, 0x00);// initialization LED off
-	i2c_smbus_write_byte_data(ktd20xx_client, 0x00, 0x20);// mode set---IC work when both SCL and SDA goes high
-	i2c_smbus_write_byte_data(ktd20xx_client, 0x06, 0xbf);//set current is 24mA
-	i2c_smbus_write_byte_data(ktd20xx_client, 0x05, period);//rase time
-	i2c_smbus_write_byte_data(ktd20xx_client, 0x01, flashtime);//dry flash period
+	i2c_smbus_write_byte_data(ktd20xx_client, 0x07, 0xbf);//set current is 24mA
+	i2c_smbus_write_byte_data(ktd20xx_client, 0x05, 0xaa);//rase time
+	i2c_smbus_write_byte_data(ktd20xx_client, 0x01, 0x30);//dry flash period
 	i2c_smbus_write_byte_data(ktd20xx_client, 0x02, 0x00);//reset internal counter
 	i2c_smbus_write_byte_data(ktd20xx_client, 0x04, 0x02);//allocate led1 to timer1
 	i2c_smbus_write_byte_data(ktd20xx_client, 0x02, 0x56);//led flashing(curerent ramp-up and down countinuously)
-
 }
 
 //EXPORT_SYMBOL(ktd22xx_breath_leds);
@@ -170,9 +165,9 @@ static ssize_t Breathled_switch_store ( struct device *dev,
 	   ktd2xx_led_on_green(brightness);
 	}
 	else if( mode == 0x2){
-	   //breath_leds = 2;
-	   //led_on_off = 2;
-	   //ktd2xx_led_on_green(brightness);
+	   breath_leds = 255;
+	   led_on_off = 7;
+	   ktd2xx_led_off();
 	}
 	else if( mode == 0x3){
 	    breath_leds = 5;
@@ -180,19 +175,19 @@ static ssize_t Breathled_switch_store ( struct device *dev,
 	   ktd22xx_lowbattery_breath_leds_green(brightness);
 	}
 	else if( mode == 0x4){
-	   breath_leds = 4;
-	   led_on_off = 4;
-	   ktd22xx_lowbattery_breath_leds_red(brightness);
+	  // breath_leds = 4;
+	  // led_on_off = 4;
+	  // ktd22xx_lowbattery_breath_leds_red(brightness);
 	}
 	else if( mode == 0x5){
-	   breath_leds = 5;
-	   led_on_off = 5;
-	   ktd22xx_lowbattery_breath_leds_green(brightness);
+	  // breath_leds = 5;
+	  // led_on_off = 5;
+	  // ktd22xx_lowbattery_breath_leds_green(brightness);
 	}
 	else if( mode == 0x6){
 	   breath_leds = 5;
 	   led_on_off = 5;
-	   ktd22xx_breath_leds_time(747);
+	   ktd22xx_breath_leds_time();
 	}
 	else{
 	   breath_leds = 255;
@@ -225,7 +220,7 @@ static ssize_t Breathled_switch_store2 ( struct device *dev,
 		return ret;	
 	}	
 	//sprintf ( buf, "%d\n", sn3191_breath_led);
-	ktd22xx_breath_leds_time(value);
+	ktd22xx_breath_leds_time();
 	breath_leds = 1;
 	
 	return count;
