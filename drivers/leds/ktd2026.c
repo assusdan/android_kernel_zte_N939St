@@ -193,6 +193,8 @@ static ssize_t Breathled_switch_store ( struct device *dev,
 	   breath_leds = 5;
 	   led_on_off = 5;
 	   ktd22xx_lowbattery_breath_leds_green(brightness);
+	   msleep(1500);
+   	   ktd2xx_led_off();
 	}
 	else{
 	   breath_leds = 255;
